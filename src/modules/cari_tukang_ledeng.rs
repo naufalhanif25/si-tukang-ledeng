@@ -1,5 +1,5 @@
 use crate::modules::tukang_ledeng::TukangLedeng;
-use  crate::modules::enums::kategori::Kategori;
+use crate::modules::enums::kategori::Kategori;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CariTukangLedeng<'a> { sumber: &'a Vec<TukangLedeng> }
