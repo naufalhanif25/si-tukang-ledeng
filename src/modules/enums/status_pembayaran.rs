@@ -1,6 +1,7 @@
 use strum_macros::EnumIter;
+use serde::{ Serialize, Deserialize };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter, Serialize, Deserialize)]
 pub enum StatusPembayaran {
     Berhasil,
     Pending,
@@ -16,12 +17,12 @@ impl StatusPembayaran {
         }
     }
 
-    pub fn from_string(input: &str) -> Option<StatusPembayaran> {
+    pub fn from_string(input: &str) -> StatusPembayaran {
         match input {
-            "Berhasil" => Some(StatusPembayaran::Berhasil),
-            "Pending" => Some(StatusPembayaran::Pending),
-            "Gagal" => Some(StatusPembayaran::Gagal),
-            _ => None,
+            "Berhasil" => StatusPembayaran::Berhasil,
+            "Pending" => StatusPembayaran::Pending,
+            "Gagal" => StatusPembayaran::Gagal,
+            _ => StatusPembayaran::Pending,
         }
     }
 }
