@@ -1,6 +1,8 @@
+use serde::{ Serialize, Deserialize };
 use crate::modules::pesanan::Pesanan;
+use crate::modules::utils;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct User {
     id: String,
     pub nama: String,
@@ -14,13 +16,43 @@ impl User {
         return Self { id, nama: nama.to_string(), email: email.to_string(), password: password.to_string(), keranjang: Vec::new() }
     }
     
-    pub fn set_nama(&mut self, nama: String) { self.nama = nama }
-    pub fn get_nama(&self) -> &str { return &self.nama }
-    pub fn set_email(&mut self, email: String) { self.email = email }
-    pub fn get_email(&self) -> &str { &self.email }
-    pub fn set_password(&mut self, password: String) { self.password = password }
-    pub fn get_password(&self) -> &str { return &self.password }
-    pub fn append_keranjang(&mut self, pesanan: Pesanan) { self.keranjang.push(pesanan) }
-    pub fn pop_keranjang(&mut self, id: String) { self.keranjang.retain(|item| *item.id != id) }
-    pub fn get_keranjang(&self) -> &Vec<Pesanan> { &self.keranjang }
+    pub fn get_id(&self) -> &str { 
+        return &self.id 
+    }
+
+    pub fn set_nama(&mut self, nama: String) { 
+        self.nama = nama 
+    }
+
+    pub fn get_nama(&self) -> &str { 
+        return &self.nama 
+    }
+
+    pub fn set_email(&mut self, email: String) { 
+        self.email = email 
+    }
+
+    pub fn get_email(&self) -> &str { 
+        &self.email 
+    }
+
+    pub fn set_password(&mut self, password: String) { 
+        self.password = utils::hash_password(&password) 
+    }
+
+    pub fn get_password(&self) -> &str { 
+        return &self.password 
+    }
+
+    pub fn append_keranjang(&mut self, pesanan: Pesanan) { 
+        self.keranjang.push(pesanan) 
+    }
+
+    pub fn pop_keranjang(&mut self, id: String) { 
+        self.keranjang.retain(|item| *item.id != id) 
+    }
+
+    pub fn get_keranjang(&self) -> &Vec<Pesanan> { 
+        &self.keranjang 
+    }
 }
