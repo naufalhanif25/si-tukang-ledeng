@@ -6,3 +6,7 @@ edition = "2024"
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1"
+rand = "0.8"
+sha2 = "0.10"
+strum = "0.26"
+strum_macros = "0.26"
