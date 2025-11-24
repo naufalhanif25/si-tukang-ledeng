@@ -1,0 +1,33 @@
+[
+  {
+    "id": "321506e26bcbf8b4",
+    "user": {
+      "id": "69897726eaabad5e",
+      "nama": "Naufal Hanif",
+      "email": "naufal.hanif@gmail.com",
+      "password": "$2b$12$gLKNlFjlZgsH6mWsPGf95u9rrH2CQ3RsflHBm/N7rCNMM1KdLW15K",
+      "keranjang": []
+    },
+    "tukang_ledeng": {
+      "id": "22bb52b735145ef5",
+      "nama": "Muhammad Akbar",
+      "email": "akbar15@gmail.com",
+      "password": "$2b$12$MFWTHuB5wRp2l37iGtzqTuJx/BzKkGKBqW33mrL5V192nfekJsth6",
+      "pesanan": [],
+      "tarif": 70000.0,
+      "kategori": "ProyekKonstruksiBaru",
+      "lokasi": "Banda Aceh",
+      "rekening": 112233445566,
+      "rekening_type": "Transfer BSI"
+    },
+    "nama": "Muhammad Akbar",
+    "tarif": 70000.0,
+    "kategori": "ProyekKonstruksiBaru",
+    "lokasi": "Banda Aceh",
+    "rekening": 112233445566,
+    "rekening_type": "Transfer BSI",
+    "status": "Berhasil",
+    "jadwal": "2025-11-28T12:00:00",
+    "layanan": "PerbaikanWastafel"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "41020593ad485b18",
+    "nama": "Ahmad",
+    "email": "ahmad17@gmail.com",
+    "password": "$2b$12$mY3twOLg12UxGMjBacytnOMfto/1BRvvKGCcSuKVDnAzdyzzulz3e",
+    "pesanan": [],
+    "tarif": 50000.0,
+    "kategori": "DomestikRumahTangga",
+    "lokasi": "Banda Aceh",
+    "rekening": 112233445566,
+    "rekening_type": "Transfer BSI"
+  },
+  {
+    "id": "22bb52b735145ef5",
+    "nama": "Muhammad Akbar",
+    "email": "akbar15@gmail.com",
+    "password": "$2b$12$MFWTHuB5wRp2l37iGtzqTuJx/BzKkGKBqW33mrL5V192nfekJsth6",
+    "pesanan": [],
+    "tarif": 70000.0,
+    "kategori": "ProyekKonstruksiBaru",
+    "lokasi": "Banda Aceh",
+    "rekening": 112233445566,
+    "rekening_type": "Transfer BSI"
+  }
+]
