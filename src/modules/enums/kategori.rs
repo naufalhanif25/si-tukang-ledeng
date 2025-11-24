@@ -1,6 +1,7 @@
 use strum_macros::EnumIter;
+use serde::{ Serialize, Deserialize };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumIter, Serialize, Deserialize)]
 pub enum Kategori {
     DomestikRumahTangga,
     Komersial,
