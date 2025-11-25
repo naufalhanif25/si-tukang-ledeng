@@ -10,7 +10,7 @@ pub enum MetodePembayaran {
     EWalleDana,
     EWalletOvo,
     EWalletGopay,
-    EWalletLinkaja,
+    EWalletLinkaja
 }
 
 impl MetodePembayaran {
