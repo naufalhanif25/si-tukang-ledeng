@@ -8,66 +8,65 @@ use crate::modules::enums::status_pembayaran::StatusPembayaran;
 use crate::modules::utils;
 use crate::modules::printer;
 
-pub fn tukang_ledeng_profile_menu<'a>(tukang_ledeng: &'a mut TukangLedeng) {
+pub fn tukang_ledeng_profile_menu<'a>(tukang_ledeng: &'a mut TukangLedeng, width: &usize) {
     loop {
         execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
-        printer::show_profile_tukang(tukang_ledeng); 
+        printer::show_profile_tukang(tukang_ledeng, width); 
     
-        utils::menu_generator("Daftar opsi tersedia", vec!["Kembali"]);
+        printer::menu_generator("Daftar opsi tersedia", vec!["Kembali"], width);
         println!("Masukkan opsi: ");
         let profile_opsi: i8 = match utils::console_read_line().parse::<i8>() {
             Ok(value) => value,
             Err(_) => { 
-                utils::print_for_seconds(&format!("Opsi harus berupa angka"), 1);
+                printer::print_for_seconds(vec![&format!("Opsi harus berupa angka")], 1, width, false);
                 continue; 
             }
         };
     
         if profile_opsi == 1 { break }
-        else { utils::print_for_seconds(&format!("Opsi '{}' tidak tersedia", profile_opsi), 1); }
+        else { printer::print_for_seconds(vec![&format!("Opsi '{}' tidak tersedia", profile_opsi)], 1, width, false); }
     }
 }
 
-pub fn tukang_ledeng_dashboard<'a>(tukang_ledeng: &'a mut TukangLedeng, daftar_user: &'a mut Vec<User>, daftar_pesanan: &'a mut Vec<Pesanan>) -> utils::MenuReturn {
-    println!("Selamat Datang, {}\n", tukang_ledeng.get_nama());
-    
+pub fn tukang_ledeng_dashboard<'a>(tukang_ledeng: &'a mut TukangLedeng, daftar_user: &'a mut Vec<User>, daftar_pesanan: &'a mut Vec<Pesanan>, width: &usize) -> utils::MenuReturn {    
     loop {
         execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
-        utils::menu_generator("Daftar opsi tersedia", vec!["Pesanan", "Profile", "Keluar"]);
+        printer::print_title(vec![&format!("Selamat Datang, {}", tukang_ledeng.get_nama()), "Dashboard Tukang Ledeng"], width, true);
+        printer::menu_generator("Daftar opsi tersedia", vec!["Pesanan", "Profile", "Keluar"], width);
         println!("Masukkan opsi: ");
         let opsi: i8 = match utils::console_read_line().parse::<i8>() {
             Ok(value) => value,
             Err(_) => { 
-                utils::print_for_seconds(&format!("Opsi harus berupa angka"), 1);
+                printer::print_for_seconds(vec![&format!("Opsi harus berupa angka")], 1, width, false);
                 continue; 
             }
         };
 
-        if opsi == 1 { tukang_ledeng_pesanan_menu(tukang_ledeng, daftar_pesanan) }
-        else if opsi == 2 { tukang_ledeng_profile_menu(tukang_ledeng) }
+        if opsi == 1 { tukang_ledeng_pesanan_menu(tukang_ledeng, daftar_pesanan, width) }
+        else if opsi == 2 { tukang_ledeng_profile_menu(tukang_ledeng, width) }
         else if opsi == 3 { 
             utils::save_users_to_file(&daftar_user, "database/users.json").unwrap();
             utils::save_pesanan_to_file(&daftar_pesanan, "database/pesanan.json").unwrap();
             return  utils::MenuReturn::Kembali 
         }
-        else { utils::print_for_seconds(&format!("Opsi '{}' tidak tersedia", opsi), 1); }
+        else { printer::print_for_seconds(vec![&format!("Opsi '{}' tidak tersedia", opsi)], 1, width, false); }
     }
 }
 
-pub fn tukang_ledeng_pesanan_menu<'a>(tukang_ledeng: &'a mut TukangLedeng, daftar_pesanan: &'a mut Vec<Pesanan>) {
+pub fn tukang_ledeng_pesanan_menu<'a>(tukang_ledeng: &'a mut TukangLedeng, daftar_pesanan: &'a mut Vec<Pesanan>, width: &usize) {
     
     loop {
         execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
 
         let daftar_pesanan_filter = utils::get_pesanan_by_tukang_id(tukang_ledeng.get_id(), daftar_pesanan);
-        printer::show_daftar_pesanan(&daftar_pesanan_filter);
+        printer::show_daftar_pesanan(&daftar_pesanan_filter, width);
 
-        utils::menu_generator("Daftar opsi tersedia", vec!["Konfirmasi", "Kembali"]);
+        printer::menu_generator("Daftar opsi tersedia", vec!["Konfirmasi", "Kembali"], width);
         println!("Masukkan opsi: ");
         let opsi: i8 = match utils::console_read_line().parse::<i8>() {
             Ok(value) => value,
             Err(_) => {  
-                utils::print_for_seconds(&format!("Opsi harus berupa angka"), 1);
+                printer::print_for_seconds(vec![&format!("Opsi harus berupa angka")], 1, width, false);
                 continue; 
             }
         };
@@ -77,7 +76,7 @@ pub fn tukang_ledeng_pesanan_menu<'a>(tukang_ledeng: &'a mut TukangLedeng, dafta
             let urutan_status: i8 = match utils::console_read_line().parse::<i8>() {
                 Ok(value) => value,
                 Err(_) => { 
-                    utils::print_for_seconds(&format!("Opsi harus berupa angka"), 1);
+                    printer::print_for_seconds(vec![&format!("Opsi harus berupa angka")], 1, width, false);
                     continue; 
                 }
             };
@@ -85,13 +84,13 @@ pub fn tukang_ledeng_pesanan_menu<'a>(tukang_ledeng: &'a mut TukangLedeng, dafta
             let current_pesanan_id = &daftar_pesanan_id_filter[urutan_status as usize - 1];
             
             let daftar_status: Vec<&str> = StatusPembayaran::iter().map(|key| key.as_string()).collect();
-            utils::menu_generator("Daftar opsi konfirmasi tersedia", daftar_status.clone());
+            printer::menu_generator("Daftar opsi konfirmasi tersedia", daftar_status.clone(), width);
             
             println!("Pilih status (sesuai urutan): ");
             let opsi_status: i8 = match utils::console_read_line().parse::<i8>() {
                 Ok(value) => value,
                 Err(_) => {  
-                    utils::print_for_seconds(&format!("Opsi harus berupa angka"), 1);
+                    printer::print_for_seconds(vec![&format!("Opsi harus berupa angka")], 1, width, false);
                     continue; 
                 }
             };
@@ -108,6 +107,6 @@ pub fn tukang_ledeng_pesanan_menu<'a>(tukang_ledeng: &'a mut TukangLedeng, dafta
             utils::save_pesanan_to_file(&daftar_pesanan, "database/pesanan.json").unwrap();
             return 
         }
-        else { utils::print_for_seconds(&format!("Opsi '{}' tidak tersedia", opsi), 1); }
+        else { printer::print_for_seconds(vec![&format!("Opsi '{}' tidak tersedia", opsi)], 1, width, false); }
     }
 }
