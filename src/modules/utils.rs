@@ -1,4 +1,5 @@
 use std::io;
+use std::{ thread, time::Duration };
 use std::fs::File;
 use std::io::Write;
 use regex::Regex;
@@ -72,6 +73,11 @@ pub fn hash_password(password: &str) -> String {
 
 pub fn verify_password(password: &str, hashed: &str) -> bool { 
     return verify(password, hashed).unwrap_or(false) 
+}
+
+pub fn print_for_seconds(message: &str, seconds: u64) {
+    println!("{}", message);
+    thread::sleep(Duration::from_secs(seconds));
 }
 
 pub fn update_status_pesanan(id_pesanan: &str, daftar_pesanan: &mut Vec<Pesanan>, status_baru: StatusPembayaran) -> bool {
@@ -148,66 +154,6 @@ pub fn load_pesanan_from_file(filename: &str) -> Vec<Pesanan> {
     serde_json::from_str(&data).unwrap_or_else(|_| Vec::new())
 }
 
-pub fn show_daftar_tukang(daftar_tukang_ledeng: &Vec<&TukangLedeng>) {
-    if daftar_tukang_ledeng.is_empty() {
-        println!("Tidak ada data tukang ledeng yang tersedia\n");
-        return;
-    }
-    println!("Hasil pencarian tukang ledeng: \n");
-
-    for (index, item) in daftar_tukang_ledeng.iter().enumerate() {
-        println!("{}. {}", index + 1, item.nama);
-        println!("   Spesialisasi : {}", item.kategori.as_string());
-        println!("   Lokasi       : {}", item.get_lokasi());
-        println!("   Tarif        : Rp {}", item.get_tarif());
-        println!("   Email        : {}", item.get_email());
-        println!("   Rekening     : {} ({})\n", item.get_rekening(), item.get_rekening_type());
-    }
-
-    println!("Total {} tukang ledeng ditemukan\n", daftar_tukang_ledeng.len());
-}
-
-pub fn show_daftar_pesanan(daftar_pesanan: &Vec<&Pesanan>) {
-    if daftar_pesanan.is_empty() {
-        println!("Tidak ada data pesanan yang tersedia\n");
-        return;
-    }
-    println!("Hasil pencarian pesanan: ");
-
-    for (index, item) in daftar_pesanan.iter().enumerate() {
-        println!("{}. {} ({})", index + 1, item.kategori.as_string(), item.get_nama());
-        println!("   ID Pesanan   : {}", item.get_id());
-        println!("   Pemesan      : {}", item.user.get_nama());
-        println!("   Lokasi       : {}", item.get_lokasi());
-        println!("   Tarif        : Rp {}", item.get_tarif());
-        println!("   Jadwal       : {}", item.get_jadwal());
-        println!("   Layanan      : {}", item.get_layanan().as_string());
-        println!("   Status       : {}", item.get_status().as_string());
-        println!("   Rekening     : {} ({})\n", item.get_rekening(), item.get_rekening_type());
-    }
-
-    println!("Total {} pesanan ditemukan\n", daftar_pesanan.len());
-}
-
-pub fn show_profile_user(user: &User) {
-    println!("Profil pengguna: ");
-    println!("ID            : {}", user.get_id());
-    println!("Nama          : {}", user.get_nama());
-    println!("Email         : {}\n", user.get_email());
-}
-
-pub fn show_profile_tukang(tukang_ledeng: &TukangLedeng) {
-    println!("Profil tukang ledeng: ");
-    println!("ID                : {}", tukang_ledeng.get_id());
-    println!("Nama              : {}", tukang_ledeng.get_nama());
-    println!("Email             : {}", tukang_ledeng.get_email());
-    println!("Tarif             : Rp {}", tukang_ledeng.get_tarif());
-    println!("Kategori          : {}", tukang_ledeng.get_kategori().as_string());
-    println!("Lokasi            : {}", tukang_ledeng.get_lokasi());
-    println!("No. Rekening      : {}", tukang_ledeng.get_rekening());
-    println!("Metode Pembayaran : {}\n", tukang_ledeng.get_rekening_type());
-}
-
 pub fn create_user<'a>(daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_user: &'a mut Vec<User>, account: Account, attemp_remaining: &mut i8) -> MenuReturn {
     let mut result = true;
 
@@ -216,14 +162,14 @@ pub fn create_user<'a>(daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_u
             if is_email_used(user.get_email(), daftar_user, daftar_tukang_ledeng) { result = false } 
             else {
                 daftar_user.push(user);
-                println!("Pengguna berhasil dibuat\n");
+                print_for_seconds("Pengguna berhasil dibuat", 1);
             }
         }
         Account::Tukang(tukang) => {
             if is_email_used(tukang.get_email(), daftar_user, daftar_tukang_ledeng) { result = false } 
             else {
                 daftar_tukang_ledeng.push(tukang);
-                println!("Tukang Ledeng berhasil dibuat\n");
+                print_for_seconds("Tukang Ledeng berhasil dibuat", 1);
             }
         }
     }
@@ -235,7 +181,7 @@ pub fn create_user<'a>(daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_u
     }
     else {
         *attemp_remaining -= 1;
-        println!("Email sudah digunakan ({} kesempatan tersisa)\n", attemp_remaining);
+        print_for_seconds(&format!("Email sudah digunakan ({} kesempatan tersisa)", attemp_remaining), 1);
         return MenuReturn::Kembali;
     }
 }
