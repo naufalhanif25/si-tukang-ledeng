@@ -4,4 +4,5 @@ pub mod tukang_ledeng;
 pub mod pesanan;
 pub mod cari_tukang_ledeng;
 pub mod utils;
-pub mod dashboard;
+pub mod printer;
+pub mod app;
