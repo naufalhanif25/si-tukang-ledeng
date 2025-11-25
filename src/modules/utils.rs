@@ -1,5 +1,4 @@
 use std::io;
-use std::{ thread, time::Duration };
 use std::fs::File;
 use std::io::Write;
 use regex::Regex;
@@ -12,6 +11,7 @@ use crate::modules::pesanan::Pesanan;
 use crate::modules::user::User;
 use crate::modules::tukang_ledeng::TukangLedeng;
 use crate::modules::enums::status_pembayaran::StatusPembayaran;
+use crate::modules::printer;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum UserRole { User, Tukang }
@@ -25,10 +25,6 @@ pub fn is_email_valid(email: &String) -> bool {
 
 pub fn is_password_valid(password: &String) -> bool { 
     return password.len() >= 8 
-}
-
-pub fn menu_generator(title: &str, menu: Vec<&str>) { 
-    println!("{}: \n{}\n", title, menu.iter().enumerate().map(|(index, element)| format!("{}. {}", index + 1, element)).collect::<Vec<String>>().join("\n")) 
 }
 
 pub fn is_email_used(email: &str, daftar_user: &Vec<User>, daftar_tukang_ledeng: &Vec<TukangLedeng>) -> bool { 
@@ -51,7 +47,7 @@ pub fn get_current_datetime() -> String {
 pub fn to_naive_datetime(input: &str) -> NaiveDateTime { 
     return match NaiveDateTime::parse_from_str(input, "%d-%m-%Y %H:%M") {
         Ok(date_time) => date_time,
-        Err(_) => { NaiveDateTime::parse_from_str(&get_current_datetime(), "%d-%m-%Y %H:%M").expect("Fallback datetime gagal — ini tidak seharusnya terjadi") }
+        Err(_) => { NaiveDateTime::parse_from_str(&get_current_datetime(), "%d-%m-%Y %H:%M").expect("Gagal parsing tanggal dan waktu") }
     }
 }
 
@@ -73,11 +69,6 @@ pub fn hash_password(password: &str) -> String {
 
 pub fn verify_password(password: &str, hashed: &str) -> bool { 
     return verify(password, hashed).unwrap_or(false) 
-}
-
-pub fn print_for_seconds(message: &str, seconds: u64) {
-    println!("{}", message);
-    thread::sleep(Duration::from_secs(seconds));
 }
 
 pub fn update_status_pesanan(id_pesanan: &str, daftar_pesanan: &mut Vec<Pesanan>, status_baru: StatusPembayaran) -> bool {
@@ -154,7 +145,7 @@ pub fn load_pesanan_from_file(filename: &str) -> Vec<Pesanan> {
     serde_json::from_str(&data).unwrap_or_else(|_| Vec::new())
 }
 
-pub fn create_user<'a>(daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_user: &'a mut Vec<User>, account: Account, attemp_remaining: &mut i8) -> MenuReturn {
+pub fn create_user<'a>(daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_user: &'a mut Vec<User>, account: Account, attemp_remaining: &mut i8, width: &usize) -> MenuReturn {
     let mut result = true;
 
     match account {
@@ -162,14 +153,14 @@ pub fn create_user<'a>(daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_u
             if is_email_used(user.get_email(), daftar_user, daftar_tukang_ledeng) { result = false } 
             else {
                 daftar_user.push(user);
-                print_for_seconds("Pengguna berhasil dibuat", 1);
+                printer::print_for_seconds(vec!["Pengguna berhasil dibuat"], 1, width, false);
             }
         }
         Account::Tukang(tukang) => {
             if is_email_used(tukang.get_email(), daftar_user, daftar_tukang_ledeng) { result = false } 
             else {
                 daftar_tukang_ledeng.push(tukang);
-                print_for_seconds("Tukang Ledeng berhasil dibuat", 1);
+                printer::print_for_seconds(vec!["Tukang Ledeng berhasil dibuat"], 1, width, false);
             }
         }
     }
@@ -181,7 +172,7 @@ pub fn create_user<'a>(daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_u
     }
     else {
         *attemp_remaining -= 1;
-        print_for_seconds(&format!("Email sudah digunakan ({} kesempatan tersisa)", attemp_remaining), 1);
+        printer::print_for_seconds(vec![&format!("Email sudah digunakan ({} kesempatan tersisa)", attemp_remaining)], 1, width, false);
         return MenuReturn::Kembali;
     }
 }
