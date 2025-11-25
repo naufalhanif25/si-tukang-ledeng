@@ -14,7 +14,7 @@ pub struct TukangLedeng {
     pub kategori: Kategori,
     pub lokasi: String,
     pub rekening: i64,
-    pub rekening_type: String,
+    pub rekening_type: String
 }
 
 impl TukangLedeng {
