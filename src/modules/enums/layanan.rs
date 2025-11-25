@@ -23,7 +23,7 @@ pub enum Layanan {
     PemasanganBathtubShower,
     PemasanganPemanasMandi,
     PemasanganMesinCuci,
-    PemasanganDishwasher,
+    PemasanganDishwasher
 }
 
 impl Layanan {
