@@ -12,7 +12,7 @@ pub enum Kategori {
     Darurat,
     FasilitasPublik,
     GedungTinggi,
-    KapalMaritim,
+    KapalMaritim
 }
 
 impl Kategori {
