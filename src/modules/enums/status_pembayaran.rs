@@ -5,7 +5,7 @@ use serde::{ Serialize, Deserialize };
 pub enum StatusPembayaran {
     Berhasil,
     Pending,
-    Gagal,
+    Gagal
 }
 
 impl StatusPembayaran {
