@@ -6,3 +6,4 @@ pub mod cari_tukang_ledeng;
 pub mod utils;
 pub mod printer;
 pub mod app;
+pub mod colorize;
