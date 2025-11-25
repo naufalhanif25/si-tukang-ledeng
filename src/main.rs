@@ -12,9 +12,10 @@ fn main() {
     let mut daftar_user: Vec<User> = utils::load_users_from_file("database/users.json");
     let mut daftar_tukang_ledeng: Vec<TukangLedeng> = utils::load_tukang_from_file("database/tukang_ledeng.json");
     let mut daftar_pesanan: Vec<Pesanan> = utils::load_pesanan_from_file("database/pesanan.json");
+    let global_width: usize = 70;
 
     execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
-    app::main::main_menu(&mut daftar_user, &mut daftar_tukang_ledeng, &mut daftar_pesanan);
+    app::main::main_menu(&mut daftar_user, &mut daftar_tukang_ledeng, &mut daftar_pesanan, &global_width);
     execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
 
     utils::save_users_to_file(&daftar_user, "database/users.json").unwrap();
