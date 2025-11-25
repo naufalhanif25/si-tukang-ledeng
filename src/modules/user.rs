@@ -8,7 +8,7 @@ pub struct User {
     pub nama: String,
     pub email: String,
     password: String,
-    keranjang: Vec<Pesanan>,
+    keranjang: Vec<Pesanan>
 }
 
 impl User {
