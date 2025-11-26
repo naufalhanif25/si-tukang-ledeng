@@ -5,7 +5,7 @@ pub struct Color {
 pub struct ColorStyle;
 
 impl ColorStyle {
-    pub const colors: [Color; 41] = [
+    pub const COLORS: [Color; 41] = [
         Color { name: "Black", code: "\x1b[30m" },
         Color { name: "Red", code: "\x1b[31m" },
         Color { name: "Green", code: "\x1b[32m" },
@@ -50,6 +50,6 @@ impl ColorStyle {
     ];
 
     pub fn get(name: &str) -> &'static str {
-        return Self::colors.iter().find(|color| color.name == name).map(|color| color.code).unwrap_or("")
+        return Self::COLORS.iter().find(|color| color.name == name).map(|color| color.code).unwrap_or("")
     }
 }
