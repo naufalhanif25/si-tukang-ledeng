@@ -3,7 +3,9 @@ use strum::IntoEnumIterator;
 use crossterm::{ execute, terminal::{ Clear, ClearType }, cursor::MoveTo };
 use crate::modules::pesanan::Pesanan;
 use crate::modules::user::User;
+use crate::modules::user_builder::UserBuilder;
 use crate::modules::tukang_ledeng::TukangLedeng;
+use crate::modules::tukang_builder::TukangLedengBuilder;
 use crate::modules::enums::kategori::Kategori;
 use crate::modules::enums::metode_pembayaran::MetodePembayaran;
 use crate::modules::printer;
@@ -136,8 +138,29 @@ pub fn auth_menu<'a>(daftar_user: &'a mut Vec<User>, daftar_tukang_ledeng: &'a m
                 utils::AuthType::Register => { 
                     let create_user_result: utils::MenuReturn;
                     match role {
-                        utils::UserRole::Tukang => { create_user_result = utils::create_user(daftar_tukang_ledeng, daftar_user, utils::Account::Tukang(TukangLedeng::new(utils::generate_unique_id(), &nama.clone(), &email.clone(), &utils::hash_password(&password.clone()), tarif, kategori, &lokasi.clone(), rekening, rekening_type.as_string().to_string().clone())), &mut attemp_remaining, width) }
-                        utils::UserRole::User => { create_user_result = utils::create_user(daftar_tukang_ledeng, daftar_user, utils::Account::User(User::new(utils::generate_unique_id(), &nama.clone(), &email.clone(), &utils::hash_password(&password.clone()))), &mut attemp_remaining, width) }
+                        utils::UserRole::Tukang => { 
+                            let new_tukang = TukangLedengBuilder::new(utils::generate_unique_id())
+                                .nama(&nama.clone())
+                                .email(&email.clone())
+                                .password(&utils::hash_password(&password.clone()))
+                                .tarif(tarif)
+                                .kategori(kategori)
+                                .lokasi(&lokasi.clone())
+                                .rekening(rekening)
+                                .rekening_type(&rekening_type.as_string().to_string().clone())
+                                .build();
+
+                            create_user_result = utils::create_user(daftar_tukang_ledeng, daftar_user, utils::Account::Tukang(new_tukang), &mut attemp_remaining, width) 
+                        }
+                        utils::UserRole::User => { 
+                            let new_user = UserBuilder::new(utils::generate_unique_id())
+                                .nama(&nama.clone())
+                                .email(&email.clone())
+                                .password(&utils::hash_password(&password.clone()))
+                                .build();
+                            
+                            create_user_result = utils::create_user(daftar_tukang_ledeng, daftar_user, utils::Account::User(new_user), &mut attemp_remaining, width) 
+                        }
                     }
                     match create_user_result {
                         utils::MenuReturn::Kembali => { continue 'auth_loop }
