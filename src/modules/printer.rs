@@ -161,7 +161,9 @@ pub fn menu_generator(title: &str, menu: Vec<&str>, width: &usize) {
 
     for (index, item) in menu.iter().enumerate() {
         let menu_text = format!("{}", item);
-        let padding_menu = width - menu_text.len() - 7;
+        let index_len = (index + 1).to_string().len();
+        let padding_menu = width - menu_text.len() - (6 + index_len);
+        
         println!("{} {}{}.{} {}{} {}", TableBorder::get("V"), ColorStyle::get("Yellow"), index + 1, ColorStyle::get("Reset"), menu_text, " ".repeat(padding_menu), TableBorder::get("V"));
     }
     println!("{}{}{}\n", TableBorder::get("BL"), border_line, TableBorder::get("BR"));
