@@ -22,5 +22,17 @@
     "lokasi": "Banda Aceh",
     "rekening": 112233445566,
     "rekening_type": "Transfer BSI"
+  },
+  {
+    "id": "4baa65c669de5a26",
+    "nama": "Budi",
+    "email": "budi67@gmail.com",
+    "password": "$2b$12$AORqrD8VytXwqGhJiXiZVuxYYJJiosniO45PaEftgySyMzhvsBQ16",
+    "pesanan": [],
+    "tarif": 65000.0,
+    "kategori": "Komersial",
+    "lokasi": "Banda Aceh",
+    "rekening": 112233445566,
+    "rekening_type": "Transfer BSI"
   }
 ]
