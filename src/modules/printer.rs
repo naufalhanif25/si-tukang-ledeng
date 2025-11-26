@@ -3,6 +3,7 @@ use crate::modules::colorize::ColorStyle;
 use crate::modules::pesanan::Pesanan;
 use crate::modules::user::User;
 use crate::modules::tukang_ledeng::TukangLedeng;
+use crate::modules::table::TableBorder;
 
 pub fn show_daftar_tukang(daftar_tukang_ledeng: &Vec<&TukangLedeng>, width: &usize) {
     if daftar_tukang_ledeng.is_empty() {
@@ -12,8 +13,8 @@ pub fn show_daftar_tukang(daftar_tukang_ledeng: &Vec<&TukangLedeng>, width: &usi
     print_title(vec!["Hasil pencarian tukang ledeng"], width, false);
 
     for (index, item) in daftar_tukang_ledeng.iter().enumerate() {
-        let border_line = "-".repeat(width - 2);
-        if index == 0 { println!("+{}+", border_line) }
+        let border_line = TableBorder::get("H").repeat(width - 2);
+        if index == 0 { println!("{}{}{}", TableBorder::get("TL"), border_line, TableBorder::get("TR")) }
 
         let info_lines = vec![
             format!("{}. {}", index + 1, item.nama),
@@ -26,9 +27,10 @@ pub fn show_daftar_tukang(daftar_tukang_ledeng: &Vec<&TukangLedeng>, width: &usi
 
         for line in info_lines {
             let padding = if line.len() + 4 > *width { 0 } else { width - line.len() - 4 };
-            println!("| {}{} |", line, " ".repeat(padding));
+            println!("{} {}{} {}", TableBorder::get("V"), line, " ".repeat(padding), TableBorder::get("V"));
         }
-        println!("+{}+", border_line);
+        if index == daftar_tukang_ledeng.len() - 1 { println!("{}{}{}", TableBorder::get("BL"), border_line, TableBorder::get("BR")) }
+        else { println!("{}{}{}", TableBorder::get("ML"), border_line, TableBorder::get("MR")) }
     }
     println!("{}Total {} tukang ledeng ditemukan{}\n", ColorStyle::get("White"), daftar_tukang_ledeng.len(), ColorStyle::get("Reset"));
 }
@@ -41,8 +43,8 @@ pub fn show_daftar_pesanan(daftar_pesanan: &Vec<&Pesanan>, width: &usize) {
     print_title(vec!["Hasil pencarian pesanan"], width, false);
 
     for (index, item) in daftar_pesanan.iter().enumerate() {
-        let border_line = "-".repeat(width - 2);
-        if index == 0 { println!("+{}+", border_line) }
+        let border_line = TableBorder::get("H").repeat(width - 2);
+        if index == 0 { println!("{}{}{}", TableBorder::get("TL"), border_line, TableBorder::get("TR")) }
 
         let info_lines = vec![
             format!("{}. {} ({})", index + 1, item.kategori.as_string(), item.get_nama()),
@@ -58,9 +60,10 @@ pub fn show_daftar_pesanan(daftar_pesanan: &Vec<&Pesanan>, width: &usize) {
 
         for line in info_lines {
             let padding = if line.len() + 4 > *width { 0 } else { width - line.len() - 4 };
-            println!("| {}{} |", line, " ".repeat(padding));
+            println!("{} {}{} {}", TableBorder::get("V"), line, " ".repeat(padding), TableBorder::get("V"));
         }
-        println!("+{}+", border_line);
+        if index == daftar_pesanan.len() - 1 { println!("{}{}{}", TableBorder::get("BL"), border_line, TableBorder::get("BR")) }
+        else { println!("{}{}{}", TableBorder::get("ML"), border_line, TableBorder::get("MR")) }
     }
     println!("{}Total {} pesanan ditemukan{}\n", ColorStyle::get("White"), daftar_pesanan.len(), ColorStyle::get("Reset"));
 }
@@ -68,8 +71,8 @@ pub fn show_daftar_pesanan(daftar_pesanan: &Vec<&Pesanan>, width: &usize) {
 pub fn show_profile_user(user: &User, width: &usize) {
     print_title(vec!["Profile pengguna"], width, false);
     
-    let border_line = "-".repeat(width - 2);
-    println!("+{}+", border_line);
+    let border_line = TableBorder::get("H").repeat(width - 2);
+    println!("{}{}{}", TableBorder::get("TL"), border_line, TableBorder::get("TR"));
 
     let info_lines = vec![
         format!("ID            : {}", user.get_id()),
@@ -79,16 +82,16 @@ pub fn show_profile_user(user: &User, width: &usize) {
 
     for line in info_lines {
         let padding = if line.len() + 4 > *width { 0 } else { width - line.len() - 4 };
-        println!("| {}{} |", line, " ".repeat(padding));
+        println!("{} {}{} {}", TableBorder::get("V"), line, " ".repeat(padding), TableBorder::get("V"));
     }
-    println!("+{}+\n", border_line);
+    println!("{}{}{}\n", TableBorder::get("BL"), border_line, TableBorder::get("BR"));
 }
 
 pub fn show_profile_tukang(tukang_ledeng: &TukangLedeng, width: &usize) {
     print_title(vec!["Profile Tukang Ledeng"], width, false);
 
-    let border_line = "-".repeat(width - 2);
-    println!("+{}+", border_line);
+    let border_line = TableBorder::get("H").repeat(width - 2);
+    println!("{}{}{}", TableBorder::get("TL"), border_line, TableBorder::get("TR"));
 
     let info_lines = vec![
         format!("ID                : {}", tukang_ledeng.get_id()),
@@ -103,9 +106,9 @@ pub fn show_profile_tukang(tukang_ledeng: &TukangLedeng, width: &usize) {
 
     for line in info_lines {
         let padding = if line.len() + 4 > *width { 0 } else { width - line.len() - 4 };
-        println!("| {}{} |", line, " ".repeat(padding));
+        println!("{} {}{} {}", TableBorder::get("V"), line, " ".repeat(padding), TableBorder::get("V"));
     }
-    println!("+{}+\n", border_line);
+    println!("{}{}{}\n", TableBorder::get("BL"), border_line, TableBorder::get("BR"));
 }
 
 pub fn print_for_seconds(message: Vec<&str>, seconds: u64, width: &usize, use_separator: bool) {
@@ -114,52 +117,52 @@ pub fn print_for_seconds(message: Vec<&str>, seconds: u64, width: &usize, use_se
 }
 
 pub fn print_title(title_lines: Vec<&str>, width: &usize, use_separator: bool) {
-    let border_line = "-".repeat(width - 2);
+    let border_line = TableBorder::get("H").repeat(width - 2);
     
     if use_separator {
         for (index, line) in title_lines.iter().enumerate() {
-            if index == 0 { println!("+{}+", border_line) }
+            if index == 0 { println!("{}{}{}", TableBorder::get("TL"), border_line, TableBorder::get("TR")) }
             let padding = (width - line.len() - 2) / 2;
             let extra_space = (width - line.len() - 2) % 2;
 
             if index == 0 {
-                println!("|{}{}{}{}{}|", " ".repeat(padding), ColorStyle::get("Yellow"), line, ColorStyle::get("Reset"), " ".repeat(padding + extra_space));
+                println!("{}{}{}{}{}{}{}", TableBorder::get("V"), " ".repeat(padding), ColorStyle::get("Yellow"), line, ColorStyle::get("Reset"), " ".repeat(padding + extra_space), TableBorder::get("V"));
             }
             else {
-                println!("|{}{}{}|", " ".repeat(padding), line, " ".repeat(padding + extra_space));
+                println!("{}{}{}{}{}", TableBorder::get("V")," ".repeat(padding), line, " ".repeat(padding + extra_space), TableBorder::get("V"));
             }
 
-            if index < title_lines.len() - 1 { println!("+{}+", border_line) } 
-            else { println!("+{}+\n", border_line) }
+            if index < title_lines.len() - 1 { println!("{}{}{}", TableBorder::get("ML"), border_line, TableBorder::get("MR")) } 
+            else { println!("{}{}{}\n", TableBorder::get("BL"), border_line, TableBorder::get("BR")) }
         }
     }
     else {
-        println!("+{}+", border_line);
+        println!("{}{}{}", TableBorder::get("TL"), border_line, TableBorder::get("TR"));
 
         for line in title_lines {
             let padding = (width - line.len() - 2) / 2;
             let extra_space = (width - line.len() - 2) % 2;
             
-            println!("|{}{}{}{}{}|", " ".repeat(padding), ColorStyle::get("Yellow"), line, ColorStyle::get("Reset"), " ".repeat(padding + extra_space));
+            println!("{}{}{}{}{}{}{}", TableBorder::get("V"), " ".repeat(padding), ColorStyle::get("Yellow"), line, ColorStyle::get("Reset"), " ".repeat(padding + extra_space), TableBorder::get("V"));
         }
-        println!("+{}+\n", border_line);
+        println!("{}{}{}\n", TableBorder::get("BL"), border_line, TableBorder::get("BR"));
     }
 }
 
 pub fn menu_generator(title: &str, menu: Vec<&str>, width: &usize) {
-    let border_line = "-".repeat(width - 2);
+    let border_line = TableBorder::get("H").repeat(width - 2);
     let padding_title = (width - title.len() - 2) / 2;
     let extra_space = (width - title.len() - 2) % 2;
-    let title_line = format!("|{}{}{}{}{}|", " ".repeat(padding_title), ColorStyle::get("Yellow"), title, ColorStyle::get("Reset"), " ".repeat(padding_title + extra_space));
+    let title_line = format!("{}{}{}{}{}{}{}", TableBorder::get("V"), " ".repeat(padding_title), ColorStyle::get("Yellow"), title, ColorStyle::get("Reset"), " ".repeat(padding_title + extra_space), TableBorder::get("V"));
 
-    println!("+{}+", border_line);
+    println!("{}{}{}", TableBorder::get("TL"), border_line, TableBorder::get("TR"));
     println!("{}", title_line);
-    println!("+{}+", border_line);
+    println!("{}{}{}", TableBorder::get("ML"), border_line, TableBorder::get("MR"));
 
     for (index, item) in menu.iter().enumerate() {
         let menu_text = format!("{}", item);
         let padding_menu = width - menu_text.len() - 7;
-        println!("| {}{}.{} {}{} |", ColorStyle::get("Yellow"), index + 1, ColorStyle::get("Reset"), menu_text, " ".repeat(padding_menu));
+        println!("{} {}{}.{} {}{} {}", TableBorder::get("V"), ColorStyle::get("Yellow"), index + 1, ColorStyle::get("Reset"), menu_text, " ".repeat(padding_menu), TableBorder::get("V"));
     }
-    println!("+{}+\n", border_line);
+    println!("{}{}{}\n", TableBorder::get("BL"), border_line, TableBorder::get("BR"));
 }
