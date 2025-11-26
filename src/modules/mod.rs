@@ -7,3 +7,4 @@ pub mod utils;
 pub mod printer;
 pub mod app;
 pub mod colorize;
+pub mod table;
