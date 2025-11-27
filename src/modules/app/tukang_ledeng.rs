@@ -82,7 +82,12 @@ pub fn tukang_ledeng_pesanan_menu<'a>(tukang_ledeng: &'a mut TukangLedeng, dafta
                 }
             };
             let daftar_pesanan_id_filter = utils::filter_pesanan_id_by_tukang_id(tukang_ledeng.get_id(), daftar_pesanan);
-            let current_pesanan_id = &daftar_pesanan_id_filter[urutan_status as usize - 1];
+            let mut current_index = (urutan_status as usize) - 1;
+            match utils::range_err_handler(current_index, daftar_pesanan_id_filter.len(), width) {
+                utils::MenuReturn::Kembali => { continue }
+                utils::MenuReturn::Lanjut => {}
+            }
+            let current_pesanan_id = &daftar_pesanan_id_filter[current_index];
             
             let daftar_status: Vec<&str> = StatusPembayaran::iter().map(|key| key.as_string()).collect();
             printer::menu_generator("Daftar opsi konfirmasi tersedia", daftar_status.clone(), width);
@@ -95,7 +100,12 @@ pub fn tukang_ledeng_pesanan_menu<'a>(tukang_ledeng: &'a mut TukangLedeng, dafta
                     continue; 
                 }
             };
-            let current_status = daftar_status[opsi_status as usize - 1];
+            current_index = (opsi_status as usize) - 1;
+            match utils::range_err_handler(current_index, daftar_status.len(), width) {
+                utils::MenuReturn::Kembali => { continue }
+                utils::MenuReturn::Lanjut => {}
+            }
+            let current_status = daftar_status[current_index];
             let status_enum = StatusPembayaran::from_string(current_status);
             let state = status_enum.to_state();
             let new_state: Box<dyn PaymentState> = match status_enum {
