@@ -8,6 +8,7 @@ use crate::modules::pesanan::Pesanan;
 use crate::modules::user::User;
 use crate::modules::tukang_ledeng::TukangLedeng;
 use crate::modules::enums::layanan::Layanan;
+use crate::modules::enums::kategori::Kategori;
 use crate::modules::utils;
 use crate::modules::printer;
 
@@ -58,12 +59,13 @@ pub fn user_dashboard<'a>(user: &'a mut User, daftar_tukang_ledeng: &'a mut Vec<
 }
 
 pub fn cari_menu<'a>(user: &'a mut User, daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_pesanan: &'a mut Vec<Pesanan>, width: &usize) {
-    let pencari = CariTukangLedeng::new(&daftar_tukang_ledeng);
+    let daftar_tukang_clone = daftar_tukang_ledeng.clone();
+    let pencari = CariTukangLedeng::new(&daftar_tukang_clone);
     
     loop {
         execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
         printer::print_title(vec!["Menu Pencarian Tukang Ledeng"], width, false);
-        printer::menu_generator("Daftar opsi tersedia", vec!["Cari", "Kembali"], width);
+        printer::menu_generator("Daftar opsi tersedia", vec!["Cari", "Filter (Kategori)", "Kembali"], width);
         println!("Masukkan opsi: ");
         let opsi: i8 = match utils::console_read_line().parse::<i8>() {
             Ok(value) => value,
@@ -93,52 +95,59 @@ pub fn cari_menu<'a>(user: &'a mut User, daftar_tukang_ledeng: &'a mut Vec<Tukan
             };
             
             if opsi_pesan == 1 {
-                println!("Pilih tukang ledeng (sesuai urutan): ");
-                let urutan_tukang: i8 = match utils::console_read_line().parse::<i8>() {
-                    Ok(value) => value,
-                    Err(_) => { 
-                        printer::print_for_seconds(vec![&format!("Opsi harus berupa angka")], 1, width, false);
-                        continue; 
-                    }
-                };
-                let current_tukang_ledeng = hasil_cari[urutan_tukang as usize - 1];
-                
-                println!("Masukkan lokasi (ex: Banda Aceh): ");
-                let lokasi = utils::console_read_line();
-                
-                println!("Masukkan jadwal DD-MM-YYYY HH:MM (ex: 25-11-2025 14:00): ");
-                let jadwal: NaiveDateTime = utils::to_naive_datetime(&utils::console_read_line());
-                
-                printer::menu_generator("Daftar layanan", Layanan::iter().map(|key| key.as_string()).collect(), width);
-                
-                println!("Pilih jenis layanan (sesuai urutan): ");
-                let daftar_layanan: Vec<&str> = Layanan::iter().map(|key| key.as_string()).collect();
-                let layanan_index: i8 = match utils::console_read_line().parse::<i8>() {
-                    Ok(value) => value,
-                    Err(_) => {  
-                        printer::print_for_seconds(vec![&format!("Opsi harus berupa angka")], 1, width, false);
-                        continue;
-                    }
-                };
-                let current_layanan = match Layanan::from_string(&daftar_layanan[layanan_index as usize - 1]) {
-                    Some(value) => value,
-                    _ => { 
-                        printer::print_for_seconds(vec![&format!("Opsi tidak valid")], 1, width, false); 
-                        continue; 
-                    }
-                };
-                let pesanan_baru = Pesanan::new(utils::generate_unique_id(), user.clone(), current_tukang_ledeng.clone(), &current_tukang_ledeng.get_nama(), *current_tukang_ledeng.get_tarif(), *current_tukang_ledeng.get_kategori(), &lokasi, *current_tukang_ledeng.get_rekening(), current_tukang_ledeng.get_rekening_type().to_string().clone(), jadwal, current_layanan);
-                
-                daftar_pesanan.push(pesanan_baru);
-                printer::print_for_seconds(vec![&format!("Pesanan berhasil dibuat")], 1, width, false);
-                
-                utils::save_tukang_to_file(&daftar_tukang_ledeng, "database/tukang_ledeng.json").unwrap();
-                utils::save_pesanan_to_file(&daftar_pesanan, "database/pesanan.json").unwrap();
+                match pesan_menu(&hasil_cari, user, daftar_tukang_ledeng, daftar_pesanan, width) {
+                    utils::MenuReturn::Kembali => { continue; }
+                    utils::MenuReturn::Lanjut => {}
+                }
             }
             else if opsi_pesan == 2 { continue }
             else { printer::print_for_seconds(vec![&format!("Opsi '{}' tidak tersedia", opsi_pesan)], 1, width, false); }
         }
-        else if  opsi == 2 { 
+        else if opsi == 2 {
+            printer::menu_generator("Daftar Kategori", Kategori::iter().map(|k| k.as_string()).collect(), width);
+
+            println!("Pilih kategori (sesuai urutan): ");
+            let daftar_kategori: Vec<&str> = Kategori::iter().map(|k| k.as_string()).collect();
+            let kategori_index: i8 = match utils::console_read_line().parse::<i8>() {
+                Ok(value) => value,
+                Err(_) => {
+                    printer::print_for_seconds(vec!["Opsi harus berupa angka"], 1, width, false);
+                    continue;
+                }
+            };
+            let kategori = match Kategori::from_string(daftar_kategori[kategori_index as usize - 1]) {
+                Some(v) => v,
+                _ => {
+                    printer::print_for_seconds(vec!["Kategori tidak valid"], 1, width, false);
+                    continue;
+                }
+            };
+            let strategy = FilterStrategy { kategori };
+            let hasil_filter = pencari.run_strategy(&strategy);
+
+            execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
+            printer::show_daftar_tukang(&hasil_filter, width);
+            printer::menu_generator("Daftar opsi tersedia", vec!["Pesan", "Kembali"], width);
+
+            println!("Masukkan opsi: ");
+            let opsi_pesan: i8 = match utils::console_read_line().parse::<i8>() {
+                Ok(value) => value,
+                Err(_) => {
+                    printer::print_for_seconds(vec!["Opsi harus berupa angka"], 1, width, false);
+                    continue;
+                }
+            };
+
+            if opsi_pesan == 1 {
+                match pesan_menu(&hasil_filter, user, daftar_tukang_ledeng, daftar_pesanan, width) {
+                    utils::MenuReturn::Kembali => { continue; }
+                    utils::MenuReturn::Lanjut => {}
+                }
+            }
+            else if opsi_pesan == 2 { continue }
+            else { printer::print_for_seconds(vec![&format!("Opsi '{}' tidak tersedia", opsi_pesan)], 1, width, false); }
+        }
+        else if  opsi == 3 { 
             utils::save_tukang_to_file(&daftar_tukang_ledeng, "database/tukang_ledeng.json").unwrap();
             utils::save_pesanan_to_file(&daftar_pesanan, "database/pesanan.json").unwrap();
             return 
@@ -167,4 +176,50 @@ pub fn user_pesanan_menu<'a>(user: &'a mut User, daftar_pesanan: &'a mut Vec<Pes
         if profile_opsi == 1 { break }
         else { printer::print_for_seconds(vec![&format!("Opsi '{}' tidak tersedia", profile_opsi)], 1, width, false); }
     }
+}
+
+pub fn pesan_menu<'a>(hasil_cari: &Vec<&TukangLedeng>, user: &'a mut User, daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_pesanan: &'a mut Vec<Pesanan>, width: &usize) -> utils::MenuReturn {
+    println!("Pilih tukang ledeng (sesuai urutan): ");
+    let urutan_tukang: i8 = match utils::console_read_line().parse::<i8>() {
+        Ok(value) => value,
+        Err(_) => { 
+            printer::print_for_seconds(vec![&format!("Opsi harus berupa angka")], 1, width, false);
+            return utils::MenuReturn::Kembali; 
+        }
+    };
+    let current_tukang_ledeng = hasil_cari[urutan_tukang as usize - 1];
+    
+    println!("Masukkan lokasi (ex: Banda Aceh): ");
+    let lokasi = utils::console_read_line();
+    
+    println!("Masukkan jadwal DD-MM-YYYY HH:MM (ex: 25-11-2025 14:00): ");
+    let jadwal: NaiveDateTime = utils::to_naive_datetime(&utils::console_read_line());
+    
+    printer::menu_generator("Daftar layanan", Layanan::iter().map(|key| key.as_string()).collect(), width);
+    
+    println!("Pilih jenis layanan (sesuai urutan): ");
+    let daftar_layanan: Vec<&str> = Layanan::iter().map(|key| key.as_string()).collect();
+    let layanan_index: i8 = match utils::console_read_line().parse::<i8>() {
+        Ok(value) => value,
+        Err(_) => {  
+            printer::print_for_seconds(vec![&format!("Opsi harus berupa angka")], 1, width, false);
+            return utils::MenuReturn::Kembali;
+        }
+    };
+    let current_layanan = match Layanan::from_string(&daftar_layanan[layanan_index as usize - 1]) {
+        Some(value) => value,
+        _ => { 
+            printer::print_for_seconds(vec![&format!("Opsi tidak valid")], 1, width, false); 
+            return utils::MenuReturn::Kembali;
+        }
+    };
+    let pesanan_baru = Pesanan::new(utils::generate_unique_id(), user.clone(), current_tukang_ledeng.clone(), &current_tukang_ledeng.get_nama(), *current_tukang_ledeng.get_tarif(), *current_tukang_ledeng.get_kategori(), &lokasi, *current_tukang_ledeng.get_rekening(), current_tukang_ledeng.get_rekening_type().to_string().clone(), jadwal, current_layanan);
+    
+    daftar_pesanan.push(pesanan_baru);
+    printer::print_for_seconds(vec![&format!("Pesanan berhasil dibuat")], 1, width, false);
+    
+    utils::save_tukang_to_file(&daftar_tukang_ledeng, "database/tukang_ledeng.json").unwrap();
+    utils::save_pesanan_to_file(&daftar_pesanan, "database/pesanan.json").unwrap();
+
+    return utils::MenuReturn::Lanjut;
 }
