@@ -62,7 +62,12 @@ pub fn auth_menu<'a>(daftar_user: &'a mut Vec<User>, daftar_tukang_ledeng: &'a m
                                 continue 'auth_loop; 
                             }
                         };
-                        kategori = match Kategori::from_string(&daftar_kategori[kategori_index as usize - 1]) {
+                        let mut current_index = (kategori_index as usize) - 1;
+                        match utils::range_err_handler(current_index, daftar_kategori.len(), width) {
+                            utils::MenuReturn::Kembali => { continue 'auth_loop }
+                            utils::MenuReturn::Lanjut => {}
+                        }
+                        kategori = match Kategori::from_string(&daftar_kategori[current_index]) {
                             Some(value) => value,
                             _ => { 
                                 printer::print_for_seconds(vec![&format!("Opsi tidak valid")], 1, width, false); 
@@ -93,7 +98,12 @@ pub fn auth_menu<'a>(daftar_user: &'a mut Vec<User>, daftar_tukang_ledeng: &'a m
                                 continue 'auth_loop; 
                             }
                         };
-                        rekening_type = match MetodePembayaran::from_string(&daftar_rekening_type[rekening_index as usize - 1]) {
+                        current_index = (rekening_index as usize) - 1;
+                        match utils::range_err_handler(current_index, daftar_rekening_type.len(), width) {
+                            utils::MenuReturn::Kembali => { continue 'auth_loop }
+                            utils::MenuReturn::Lanjut => {}
+                        }
+                        rekening_type = match MetodePembayaran::from_string(&daftar_rekening_type[current_index]) {
                             Some(value) => value,
                             _ => { 
                                 printer::print_for_seconds(vec![&format!("Opsi tidak valid")], 1, width, false); 
