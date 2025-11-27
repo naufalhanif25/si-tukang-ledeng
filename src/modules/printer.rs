@@ -54,7 +54,7 @@ pub fn show_daftar_pesanan(daftar_pesanan: &Vec<&Pesanan>, width: &usize) {
             format!("   Tarif        : Rp {}", item.get_tarif()),
             format!("   Jadwal       : {}", item.get_jadwal()),
             format!("   Layanan      : {}", item.get_layanan().as_string()),
-            format!("   Status       : {}", item.get_status().as_string()),
+            format!("   Status       : {}", item.get_status().to_state().status().as_string()),
             format!("   Rekening     : {} ({})", item.get_rekening(), item.get_rekening_type())
         ];
 
