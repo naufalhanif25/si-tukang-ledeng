@@ -115,7 +115,12 @@ pub fn cari_menu<'a>(user: &'a mut User, daftar_tukang_ledeng: &'a mut Vec<Tukan
                     continue;
                 }
             };
-            let kategori = match Kategori::from_string(daftar_kategori[kategori_index as usize - 1]) {
+            let current_index = (kategori_index as usize) - 1;
+            match utils::range_err_handler(current_index, daftar_kategori.len(), width) {
+                utils::MenuReturn::Kembali => { continue }
+                utils::MenuReturn::Lanjut => {}
+            }
+            let kategori = match Kategori::from_string(daftar_kategori[current_index]) {
                 Some(v) => v,
                 _ => {
                     printer::print_for_seconds(vec!["Kategori tidak valid"], 1, width, false);
@@ -187,7 +192,12 @@ pub fn pesan_menu<'a>(hasil_cari: &Vec<&TukangLedeng>, user: &'a mut User, dafta
             return utils::MenuReturn::Kembali; 
         }
     };
-    let current_tukang_ledeng = hasil_cari[urutan_tukang as usize - 1];
+    let mut current_index = (urutan_tukang as usize) - 1;
+    match utils::range_err_handler(current_index, hasil_cari.len(), width) {
+        utils::MenuReturn::Kembali => { return utils::MenuReturn::Kembali }
+        utils::MenuReturn::Lanjut => {}
+    }
+    let current_tukang_ledeng = hasil_cari[current_index];
     
     println!("Masukkan lokasi (ex: Banda Aceh): ");
     let lokasi = utils::console_read_line();
@@ -206,7 +216,12 @@ pub fn pesan_menu<'a>(hasil_cari: &Vec<&TukangLedeng>, user: &'a mut User, dafta
             return utils::MenuReturn::Kembali;
         }
     };
-    let current_layanan = match Layanan::from_string(&daftar_layanan[layanan_index as usize - 1]) {
+    current_index = (layanan_index as usize) - 1;
+    match utils::range_err_handler(current_index, daftar_layanan.len(), width) {
+        utils::MenuReturn::Kembali => { return utils::MenuReturn::Kembali }
+        utils::MenuReturn::Lanjut => {}
+    }
+    let current_layanan = match Layanan::from_string(&daftar_layanan[current_index]) {
         Some(value) => value,
         _ => { 
             printer::print_for_seconds(vec![&format!("Opsi tidak valid")], 1, width, false); 
