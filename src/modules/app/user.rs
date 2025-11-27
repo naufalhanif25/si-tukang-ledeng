@@ -3,6 +3,7 @@ use chrono::NaiveDateTime;
 use strum::IntoEnumIterator;
 use crossterm::{ execute, terminal::{ Clear, ClearType }, cursor::MoveTo };
 use crate::modules::cari_tukang_ledeng::CariTukangLedeng;
+use crate::modules::pencarian_strategy::*;
 use crate::modules::pesanan::Pesanan;
 use crate::modules::user::User;
 use crate::modules::tukang_ledeng::TukangLedeng;
@@ -75,7 +76,8 @@ pub fn cari_menu<'a>(user: &'a mut User, daftar_tukang_ledeng: &'a mut Vec<Tukan
         if opsi == 1 {
             println!("Masukkan kata kunci (nama/lokasi): ");
             let kata_kunci = utils::console_read_line();
-            let hasil_cari = pencari.cari(&kata_kunci);
+            let strategy = CariStrategy { kata_kunci };
+            let hasil_cari = pencari.run_strategy(&strategy);
 
             execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
             printer::show_daftar_tukang(&hasil_cari, width);
