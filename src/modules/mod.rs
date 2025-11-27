@@ -10,3 +10,4 @@ pub mod colorize;
 pub mod table;
 pub mod tukang_builder;
 pub mod user_builder;
+pub mod pencarian_strategy;
