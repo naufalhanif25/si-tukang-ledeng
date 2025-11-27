@@ -5,6 +5,7 @@ use crate::modules::pesanan::Pesanan;
 use crate::modules::user::User;
 use crate::modules::tukang_ledeng::TukangLedeng;
 use crate::modules::enums::status_pembayaran::StatusPembayaran;
+use crate::modules::enums::status_state::PaymentState;
 use crate::modules::utils;
 use crate::modules::printer;
 
@@ -95,7 +96,14 @@ pub fn tukang_ledeng_pesanan_menu<'a>(tukang_ledeng: &'a mut TukangLedeng, dafta
                 }
             };
             let current_status = daftar_status[opsi_status as usize - 1];
-            let update_return = utils::update_status_pesanan(current_pesanan_id, daftar_pesanan, StatusPembayaran::from_string(current_status));
+            let status_enum = StatusPembayaran::from_string(current_status);
+            let state = status_enum.to_state();
+            let new_state: Box<dyn PaymentState> = match status_enum {
+                StatusPembayaran::Berhasil => state.bayar(),
+                StatusPembayaran::Gagal => state.gagal(),
+                StatusPembayaran::Pending => state.reset(),
+            };
+            let update_return = utils::update_status_pesanan(current_pesanan_id, daftar_pesanan, new_state.status());
             
             if update_return {
                 println!("Status berhasil diperbarui");
