@@ -145,6 +145,15 @@ pub fn load_pesanan_from_file(filename: &str) -> Vec<Pesanan> {
     serde_json::from_str(&data).unwrap_or_else(|_| Vec::new())
 }
 
+pub fn range_err_handler(current_len: usize, target_len: usize, width: &usize) -> MenuReturn {
+    let index: usize = current_len + 1;
+    if index > target_len {
+        printer::print_for_seconds(vec![&format!("Urutan {} tidak tersedia", index)], 1, width, false);
+        return MenuReturn::Kembali;
+    }
+    return  MenuReturn::Lanjut;
+}
+
 pub fn create_user<'a>(daftar_tukang_ledeng: &'a mut Vec<TukangLedeng>, daftar_user: &'a mut Vec<User>, account: Account, attemp_remaining: &mut i8, width: &usize) -> MenuReturn {
     let mut result = true;
 
